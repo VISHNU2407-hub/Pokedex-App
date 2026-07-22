@@ -114,14 +114,11 @@ Pokémon sprites are sourced from the [Pokémon Showdown](https://play.pokemonsh
 
 ---
 
-## License
+## 📄 License
 
-MIT — free to use, modify, and distribute.
+This project is open source and available for personal and educational use.
 
 ---
 
-<p align="center">
-  Built with ❤️ using vanilla JavaScript and the <a href="https://pokeapi.co/">PokéAPI</a>.
-  <br />
-  Pokémon is © Nintendo / Game Freak. This is a fan project and is not affiliated with Nintendo.
-</p>
+<p align="center">Made with 💜 by VKS (Visionary Kraft Studio) </p>
+
