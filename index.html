@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Premium Pokédex Web Application built with vanilla JavaScript and the PokéAPI" />
+  <title>Pokédex - Premium Pokémon Browser</title>
+
+  <!-- Stylesheet -->
+  <link rel="stylesheet" href="style.css" />
+
+  <!-- Font Awesome for icons (loaded via CDN) -->
+  <link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+    integrity="sha512-9Y1w+6J7L8N5p3Z7W8WZxXMQ2oW6kS3CqISmB1WjwR7B0R5x+3oxosJJ8Z5RKMZzG2n88mApQLTshSxmO9Bq4g=="
+    crossorigin="anonymous"
+    referrerpolicy="no-referrer"
+  />
+
+  <!-- Google Fonts for premium typography -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Orbitron:wght@400;500;600;700;800;900&display=swap"
+    rel="stylesheet"
+  />
+</head>
+<body>
+
+  <!-- ===================== HEADER ===================== -->
+  <header class="header" role="banner">
+    <div class="header-content">
+      <div class="logo">
+        <i class="fas fa-dragon" aria-hidden="true"></i>
+        <h1 class="logo-text">
+          <span class="logo-poke">Poké</span><span class="logo-dex">dex</span>
+        </h1>
+      </div>
+      <p class="header-tagline">Gotta Search 'Em All!</p>
+    </div>
+  </header>
+
+  <!-- ===================== MAIN CONTENT ===================== -->
+  <main class="main" role="main">
+
+    <!-- ===================== SEARCH SECTION ===================== -->
+    <section class="search-section" aria-label="Search Pokémon">
+      <div class="search-container">
+        <div class="search-wrapper">
+          <i class="fas fa-search search-icon" aria-hidden="true"></i>
+          <input
+            type="text"
+            id="searchInput"
+            class="search-input"
+            placeholder="Search Pokémon by name or ID..."
+            autocomplete="off"
+            aria-label="Search Pokémon by name or ID"
+          />
+          <button id="searchBtn" class="search-btn" aria-label="Search">
+            <i class="fas fa-magnifying-glass" aria-hidden="true"></i>
+            <span>Search</span>
+          </button>
+        </div>
+        <div class="search-hints">
+          <span class="hint">Try: <button class="hint-btn" data-pokemon="25">Pikachu</button></span>
+          <span class="hint-sep">|</span>
+          <span class="hint">Try: <button class="hint-btn" data-pokemon="6">Charizard</button></span>
+          <span class="hint-sep">|</span>
+          <span class="hint">Try: <button class="hint-btn" data-pokemon="150">Mewtwo</button></span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== LOADING SPINNER ===================== -->
+    <div id="loadingOverlay" class="loading-overlay hidden" role="status" aria-label="Loading">
+      <div class="spinner-container">
+        <div class="pokeball-spinner">
+          <div class="pokeball-top"></div>
+          <div class="pokeball-middle"></div>
+          <div class="pokeball-bottom"></div>
+          <div class="pokeball-button"></div>
+        </div>
+        <p class="loading-text">Catching Pokémon...</p>
+      </div>
+    </div>
+
+    <!-- ===================== POKÉDEX CARD ===================== -->
+    <section id="pokedex" class="pokedex-section hidden" aria-label="Pokédex Display">
+      <div class="pokedex-card" id="pokedexCard">
+
+        <!-- Error Banner (hidden by default) -->
+        <div id="errorBanner" class="error-banner hidden" role="alert">
+          <i class="fas fa-circle-exclamation" aria-hidden="true"></i>
+          <span id="errorMessage"></span>
+          <button id="errorClose" class="error-close" aria-label="Dismiss error">&times;</button>
+        </div>
+
+        <!-- Card Top: Image & Identity -->
+        <div class="card-header-section">
+          <div class="card-image-wrapper">
+            <div class="card-image-container">
+              <img id="pokemonImage" src="" alt="Pokémon sprite" class="pokemon-image" />
+            </div>
+            <div class="card-image-glow"></div>
+          </div>
+
+          <div class="card-identity">
+            <span class="pokemon-id" id="pokemonId">#000</span>
+            <h2 class="pokemon-name" id="pokemonName">Pokémon</h2>
+          </div>
+
+          <div class="card-badges" id="typeBadges">
+            <!-- Type badges injected dynamically -->
+          </div>
+        </div>
+
+        <!-- Card Details -->
+        <div class="card-details">
+          <div class="info-grid">
+            <div class="info-item">
+              <i class="fas fa-ruler-vertical info-icon" aria-hidden="true"></i>
+              <span class="info-label">Height</span>
+              <span class="info-value" id="pokemonHeight">—</span>
+            </div>
+            <div class="info-item">
+              <i class="fas fa-weight-scale info-icon" aria-hidden="true"></i>
+              <span class="info-label">Weight</span>
+              <span class="info-value" id="pokemonWeight">—</span>
+            </div>
+            <div class="info-item">
+              <i class="fas fa-star info-icon" aria-hidden="true"></i>
+              <span class="info-label">Base Exp</span>
+              <span class="info-value" id="pokemonBaseExp">—</span>
+            </div>
+            <div class="info-item abilities-item">
+              <i class="fas fa-bolt info-icon" aria-hidden="true"></i>
+              <span class="info-label">Abilities</span>
+              <span class="info-value" id="pokemonAbilities">—</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Stats -->
+        <div class="card-stats-section">
+          <h3 class="stats-heading">
+            <i class="fas fa-chart-simple" aria-hidden="true"></i>
+            Base Stats
+          </h3>
+          <div class="stats-container" id="statsContainer">
+            <!-- Stats injected dynamically -->
+          </div>
+        </div>
+
+        <!-- Navigation Buttons -->
+        <div class="card-navigation">
+          <button id="prevBtn" class="nav-btn prev-btn" aria-label="Previous Pokémon">
+            <i class="fas fa-chevron-left" aria-hidden="true"></i>
+            <span class="nav-text">Previous</span>
+          </button>
+          <button id="randomBtn" class="nav-btn random-btn" aria-label="Random Pokémon">
+            <i class="fas fa-dice" aria-hidden="true"></i>
+            <span class="nav-text">Random</span>
+          </button>
+          <button id="nextBtn" class="nav-btn next-btn" aria-label="Next Pokémon">
+            <span class="nav-text">Next</span>
+            <i class="fas fa-chevron-right" aria-hidden="true"></i>
+          </button>
+        </div>
+
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ===================== FOOTER ===================== -->
+  <footer class="footer" role="contentinfo">
+    <div class="footer-content">
+      <p class="footer-text">
+        Built with ❤️ using the
+        <a href="https://pokeapi.co/" target="_blank" rel="noopener noreferrer">PokéAPI</a>
+      </p>
+      <p class="footer-copyright">
+        Pokémon &copy; 1995&ndash;2026 Nintendo / Game Freak.
+        <span class="footer-disclaimer">This is a fan project and is not affiliated with Nintendo.</span>
+      </p>
+    </div>
+  </footer>
+
+  <!-- ===================== JAVASCRIPT ===================== -->
+  <script src="script.js"></script>
+</body>
+</html>
